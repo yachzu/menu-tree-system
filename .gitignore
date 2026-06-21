@@ -1,2 +1,12 @@
+# Planning documents
 menu-tree-implementation.md
 project-design.md
+uiux-design.md
+PRD_STK_MenuTreeSystem.md
+
+# Environment files (sensitive credentials)
+.env
+
+# Temporary files
+tmp/
+*.log
