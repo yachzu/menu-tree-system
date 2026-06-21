@@ -13,7 +13,7 @@ type UpdateMenuRequest struct {
 
 type MoveMenuRequest struct {
 	NewParentID *uuid.UUID `json:"new_parent_id"`
-	OrderIndex  int        `json:"order_index" binding:"min_0"`
+	OrderIndex  int        `json:"order_index" binding:"min=0"`
 }
 
 type ReorderMenuRequest struct {
@@ -21,17 +21,17 @@ type ReorderMenuRequest struct {
 }
 
 type MenuResponse struct {
-	ID         uuid.UUID  `json:"id"`
-	Name       string     `json:"name"`
-	ParentID   *uuid.UUID `json:"parent_id"`
-	Depth      int        `json:"depth"`
-	OrderIndex int        `json:"order_index"`
-	CreatedAt  string     `json:"created_at"`
-	UpdatedAt  string     `json:"updated_at"`
-	Children   string     `json:"children,omitempty"`
+	ID         uuid.UUID       `json:"id"`
+	Name       string          `json:"name"`
+	ParentID   *uuid.UUID      `json:"parent_id"`
+	Depth      int             `json:"depth"`
+	OrderIndex int             `json:"order_index"`
+	CreatedAt  string          `json:"created_at"`
+	UpdatedAt  string          `json:"updated_at"`
+	Children   []*MenuResponse `json:"children,omitempty"`
 }
 
 type ErrorResponse struct {
 	Error   string `json:"error"`
-	Message string `string:"message"`
+	Message string `json:"message"`
 }
