@@ -46,8 +46,8 @@ stk-project/
 
 ## Demo
 
-<video src="./docs/demo.mp4" controls width="100%">
-  Your browser does not support the video tag.
+<video src="https://github.com/yachzu/menu-tree-system/raw/main/docs/demo.mp4" controls width="100%">
+  <a href="https://github.com/yachzu/menu-tree-system/raw/main/docs/demo.mp4">Download demo video</a>
 </video>
 
 ## Quick Start
