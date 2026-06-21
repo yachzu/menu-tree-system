@@ -44,6 +44,12 @@ stk-project/
 └── .env.example
 ```
 
+## Demo
+
+<video src="./docs/demo.mp4" controls width="100%">
+  Your browser does not support the video tag.
+</video>
+
 ## Quick Start
 
 ### Prerequisites
