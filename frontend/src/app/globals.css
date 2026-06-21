@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, monospace;
+  --color-primary: #0051af;
+  --color-primary-dark: #00408e;
+  --color-secondary: #1565C0;
+  --color-surface: #F5F5F5;
+  --color-border: #E0E0E0;
+  --color-text-primary: #1A1A1A;
+  --color-text-secondary: #6B7280;
+  --color-input-bg: #F0F0F0;
+}
