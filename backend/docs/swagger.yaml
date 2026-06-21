@@ -1,0 +1,280 @@
+basePath: /api
+definitions:
+  dto.CreateMenuRequest:
+    properties:
+      name:
+        maxLength: 255
+        minLength: 1
+        type: string
+      parent_id:
+        type: string
+    required:
+    - name
+    type: object
+  dto.ErrorResponse:
+    properties:
+      error:
+        type: string
+      message:
+        type: string
+    type: object
+  dto.MenuResponse:
+    properties:
+      children:
+        items:
+          $ref: '#/definitions/dto.MenuResponse'
+        type: array
+      created_at:
+        type: string
+      depth:
+        type: integer
+      id:
+        type: string
+      name:
+        type: string
+      order_index:
+        type: integer
+      parent_id:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  dto.MoveMenuRequest:
+    properties:
+      new_parent_id:
+        type: string
+      order_index:
+        minimum: 0
+        type: integer
+    type: object
+  dto.ReorderMenuRequest:
+    properties:
+      order_index:
+        minimum: 0
+        type: integer
+    required:
+    - order_index
+    type: object
+  dto.UpdateMenuRequest:
+    properties:
+      name:
+        maxLength: 255
+        minLength: 1
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@stk.com
+    name: API Support
+  description: RESTful API for hierarchical menu tree management
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: http://swagger.io/terms/
+  title: STK Menu Tree System API
+  version: "1.0"
+paths:
+  /menus:
+    get:
+      consumes:
+      - application/json
+      description: Returns the full menu hierarchy as a nested tree
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Tree structure
+          schema:
+            items:
+              $ref: '#/definitions/dto.MenuResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Get all menu items (tree structure)
+      tags:
+      - menus
+    post:
+      consumes:
+      - application/json
+      description: Create a new menu item with optional parent
+      parameters:
+      - description: Menu data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateMenuRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.MenuResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Create new menu item
+      tags:
+      - menus
+  /menus/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a menu item. Children are cascade deleted at database level.
+      parameters:
+      - description: Menu ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Delete menu item
+      tags:
+      - menus
+    get:
+      consumes:
+      - application/json
+      description: Get a single menu item by ID including its children
+      parameters:
+      - description: Menu ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.MenuResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Get single menu item
+      tags:
+      - menus
+    put:
+      consumes:
+      - application/json
+      description: Update a menu item's name
+      parameters:
+      - description: Menu ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Update data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateMenuRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.MenuResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Update menu item
+      tags:
+      - menus
+  /menus/{id}/move:
+    patch:
+      consumes:
+      - application/json
+      description: Move a menu item to a different parent node, including circular
+        reference detection
+      parameters:
+      - description: Menu ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Move data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.MoveMenuRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.MenuResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Move menu item to different parent
+      tags:
+      - menus
+  /menus/{id}/reorder:
+    patch:
+      consumes:
+      - application/json
+      description: Change the order index of a menu item among its siblings
+      parameters:
+      - description: Menu ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Reorder data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ReorderMenuRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.MenuResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Reorder menu item within same level
+      tags:
+      - menus
+swagger: "2.0"
