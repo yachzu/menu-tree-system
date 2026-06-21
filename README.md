@@ -46,9 +46,7 @@ stk-project/
 
 ## Demo
 
-<video src="https://github.com/yachzu/menu-tree-system/raw/main/docs/demo.mp4" controls width="100%">
-  <a href="https://github.com/yachzu/menu-tree-system/raw/main/docs/demo.mp4">Download demo video</a>
-</video>
+![Demo GIF](./docs/demo.gif)
 
 ## Quick Start
 
