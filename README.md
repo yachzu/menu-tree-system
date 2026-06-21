@@ -59,6 +59,10 @@ stk-project/
 - PostgreSQL 16+ (atau akun [Neon](https://neon.tech) untuk cloud PostgreSQL)
 - Docker (optional, for containerized setup)
 
+> **Catatan untuk Reviewer:** File `.env.example` sudah berisi kredensial
+> database Neon yang aktif. Cukup rename ke `.env` lalu jalankan aplikasi —
+> tidak perlu setup PostgreSQL lokal.
+
 ### Development Mode (Without Docker)
 
 **1. Backend**
