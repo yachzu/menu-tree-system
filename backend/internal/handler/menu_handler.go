@@ -18,21 +18,12 @@ func NewMenuHandler(svc service.MenuService) *MenuHandler {
 	return &MenuHandler{svc: svc}
 }
 
-// GetTree godoc
-// @Summary Get all menu items (tree structure)
-// @Description Returns the full menu hierarchy as a nested tree
-// @Tags menus
-// @Accept json
-// @Produce json
-// @Success 200 {array} dto.MenuResponse "Tree structure"
-// @Failure 500 {object} dto.ErrorResponse
-// @Router /menus [get]
 func (h *MenuHandler) GetTree(c *gin.Context) {
 	tree, err := h.svc.GetTree()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Error:   "internal_error",
-			Message: err.Error(),
+			Message: "an unexpected error occurred",
 		})
 		return
 	}
@@ -71,7 +62,7 @@ func (h *MenuHandler) GetByID(c *gin.Context) {
 		}
 		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Error:   "internal_error",
-			Message: err.Error(),
+			Message: "an unexpected error occurred",
 		})
 		return
 	}
@@ -109,7 +100,7 @@ func (h *MenuHandler) Create(c *gin.Context) {
 		}
 		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Error:   "internal_error",
-			Message: err.Error(),
+			Message: "an unexpected error occurred",
 		})
 		return
 	}
@@ -158,7 +149,7 @@ func (h *MenuHandler) Update(c *gin.Context) {
 		}
 		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Error:   "internal_error",
-			Message: err.Error(),
+			Message: "an unexpected error occurred",
 		})
 		return
 	}
@@ -196,7 +187,7 @@ func (h *MenuHandler) Delete(c *gin.Context) {
 		}
 		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Error:   "internal_error",
-			Message: err.Error(),
+			Message: "an unexpected error occurred",
 		})
 		return
 	}
@@ -244,7 +235,7 @@ func (h *MenuHandler) Move(c *gin.Context) {
 		}
 		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Error:   "internal_error",
-			Message: err.Error(),
+			Message: "an unexpected error occurred",
 		})
 		return
 	}
@@ -293,7 +284,7 @@ func (h *MenuHandler) Reorder(c *gin.Context) {
 		}
 		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Error:   "internal_error",
-			Message: err.Error(),
+			Message: "an unexpected error occurred",
 		})
 		return
 	}
