@@ -11,8 +11,11 @@ import (
 
 func Setup(h *handler.MenuHandler) *gin.Engine {
 	r := gin.Default()
+	r.Use(middleware.SecurityHeaders())
 	r.Use(middleware.CORSMiddleware())
 	r.Use(middleware.ErrorHandler())
+	r.Use(middleware.RateLimiter())
+	r.MaxMultipartMemory = 1 << 10
 
 	// Swagger
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
