@@ -1,4 +1,10 @@
-import { MenuItem, CreateMenuRequest, UpdateMenuRequest, MoveMenuRequest, ReorderMenuRequest } from "./types";
+import {
+  MenuItem,
+  CreateMenuRequest,
+  UpdateMenuRequest,
+  MoveMenuRequest,
+  ReorderMenuRequest,
+} from "./types";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
 
@@ -9,7 +15,10 @@ class ApiClient {
     this.baseUrl = baseUrl;
   }
 
-  private async request<T>(path: string, options?: RequestInit): Promise<T> {
+  private async request<T>(
+    path: string,
+    options?: RequestInit & { signal?: AbortSignal },
+  ): Promise<T> {
     const res = await fetch(`${this.baseUrl}${path}`, {
       headers: { "Content-Type": "application/json" },
       ...options,
@@ -29,45 +38,65 @@ class ApiClient {
     return json.data ?? json;
   }
 
-  async getTree(): Promise<MenuItem[]> {
-    return this.request<MenuItem[]>("/menus");
+  async getTree(signal?: AbortSignal): Promise<MenuItem[]> {
+    return this.request<MenuItem[]>("/menus", { signal });
   }
 
-  async getById(id: string): Promise<MenuItem> {
-    return this.request<MenuItem>(`/menus/${id}`);
+  async getById(id: string, signal?: AbortSignal): Promise<MenuItem> {
+    return this.request<MenuItem>(`/menus/${id}`, { signal });
   }
 
-  async create(data: CreateMenuRequest): Promise<MenuItem> {
+  async create(
+    data: CreateMenuRequest,
+    signal?: AbortSignal,
+  ): Promise<MenuItem> {
     return this.request<MenuItem>("/menus", {
       method: "POST",
       body: JSON.stringify(data),
+      signal,
     });
   }
 
-  async update(id: string, data: UpdateMenuRequest): Promise<MenuItem> {
+  async update(
+    id: string,
+    data: UpdateMenuRequest,
+    signal?: AbortSignal,
+  ): Promise<MenuItem> {
     return this.request<MenuItem>(`/menus/${id}`, {
       method: "PUT",
       body: JSON.stringify(data),
+      signal,
     });
   }
 
-  async delete(id: string): Promise<void> {
+  async delete(id: string, signal?: AbortSignal): Promise<void> {
     return this.request<void>(`/menus/${id}`, {
       method: "DELETE",
+      signal,
     });
   }
 
-  async move(id: string, data: MoveMenuRequest): Promise<MenuItem> {
+  async move(
+    id: string,
+    data: MoveMenuRequest,
+    signal?: AbortSignal,
+  ): Promise<MenuItem> {
     return this.request<MenuItem>(`/menus/${id}/move`, {
       method: "PATCH",
       body: JSON.stringify(data),
+      signal,
     });
   }
 
-  async reorder(id: string, data: ReorderMenuRequest): Promise<MenuItem> {
+  async reorder(
+    id: string,
+    data: ReorderMenuRequest,
+    signal?: AbortSignal,
+  ): Promise<MenuItem> {
     return this.request<MenuItem>(`/menus/${id}/reorder`, {
       method: "PATCH",
       body: JSON.stringify(data),
+      signal,
     });
   }
 }

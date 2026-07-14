@@ -8,12 +8,12 @@ interface MenuState {
   menus: MenuItem[];
   tree: MenuItem[];
   searchQuery: string;
-  expandedIds: Set<string>;
+  expandedIds: string[];
   isLoading: boolean;
   error: string | null;
   selectedMenu: MenuItem | null;
 
-  fetchTree: () => Promise<void>;
+  fetchTree: (signal?: AbortSignal) => Promise<void>;
   createMenu: (name: string, parentId: string | null) => Promise<void>;
   updateMenu: (id: string, name: string) => Promise<void>;
   deleteMenu: (id: string) => Promise<void>;
@@ -38,27 +38,32 @@ function flattenTree(tree: MenuItem[]): MenuItem[] {
   return result;
 }
 
+const expandedSet = (ids: string[]) => new Set(ids);
+
 export const useMenuStore = create<MenuState>((set, get) => ({
   menus: [],
   tree: [],
   searchQuery: "",
-  expandedIds: new Set<string>(),
+  expandedIds: [],
   isLoading: false,
   error: null,
   selectedMenu: null,
 
-  fetchTree: async () => {
+  fetchTree: async (signal) => {
     set({ isLoading: true, error: null });
     try {
-      const tree = await api.getTree();
+      const tree = await api.getTree(signal);
       const menus = flattenTree(tree);
-      set({
+      set(state => ({
         tree,
         menus,
         isLoading: false,
-        expandedIds: new Set(menus.map((m) => m.id)),
-      });
+        expandedIds: state.expandedIds.length === 0 && state.menus.length === 0
+          ? menus.filter((m) => m.depth < 2).map((m) => m.id)
+          : state.expandedIds,
+      }));
     } catch (err) {
+      if (err instanceof DOMException && err.name === "AbortError") return;
       set({
         isLoading: false,
         error: err instanceof Error ? err.message : "Failed to fetch menu tree",
@@ -129,22 +134,25 @@ export const useMenuStore = create<MenuState>((set, get) => ({
   setSearchQuery: (query) => set({ searchQuery: query }),
 
   toggleExpand: (id) => {
-    const expanded = new Set(get().expandedIds);
-    if (expanded.has(id)) {
-      expanded.delete(id);
+    const expanded = [...get().expandedIds];
+    const idx = expanded.indexOf(id);
+    if (idx !== -1) {
+      expanded.splice(idx, 1);
     } else {
-      expanded.add(id);
+      expanded.push(id);
     }
     set({ expandedIds: expanded });
   },
 
   expandAll: () => {
-    set({ expandedIds: new Set(get().menus.map((m) => m.id)) });
+    set({ expandedIds: get().menus.map((m) => m.id) });
   },
 
   collapseAll: () => {
-    set({ expandedIds: new Set() });
+    set({ expandedIds: [] });
   },
 
   setSelectedMenu: (menu) => set({ selectedMenu: menu }),
 }));
+
+export { expandedSet };
