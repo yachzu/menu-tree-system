@@ -14,6 +14,7 @@ type MenuRepository interface {
 	Update(menu *model.Menu) error
 	Delete(id uuid.UUID) error
 	GetMaxOrderIndex(parentID *uuid.UUID) (int, error)
+	IsAncestor(ancestorID, descendantID uuid.UUID) (bool, error)
 }
 
 type menuRepository struct {
@@ -56,7 +57,15 @@ func (r *menuRepository) Update(menu *model.Menu) error {
 }
 
 func (r *menuRepository) Delete(id uuid.UUID) error {
-	return r.db.Where("id = ?", id).Delete(&model.Menu{}).Error
+	return r.db.Exec(`
+        WITH RECURSIVE menu_tree AS (
+            SELECT id FROM menus WHERE id = ?
+            UNION ALL
+            SELECT m.id FROM menus m
+            JOIN menu_tree mt ON m.parent_id = mt.id
+        )
+        DELETE FROM menus WHERE id IN (SELECT id FROM menu_tree)
+    `, id).Error
 }
 
 func (r *menuRepository) GetMaxOrderIndex(parentID *uuid.UUID) (int, error) {
@@ -66,4 +75,18 @@ func (r *menuRepository) GetMaxOrderIndex(parentID *uuid.UUID) (int, error) {
 		Select("COALESCE(MAX(order_index), -1)").
 		Scan(&max).Error
 	return max, err
+}
+
+func (r *menuRepository) IsAncestor(ancestorID, descendantID uuid.UUID) (bool, error) {
+	var count int64
+	err := r.db.Raw(`
+        WITH RECURSIVE ancestors AS (
+            SELECT id, parent_id FROM menus WHERE id = ?
+            UNION ALL
+            SELECT m.id, m.parent_id FROM menus m
+            JOIN ancestors a ON m.id = a.parent_id
+        )
+        SELECT COUNT(*) FROM ancestors WHERE id = ?
+    `, descendantID, ancestorID).Scan(&count).Error
+	return count > 0, err
 }

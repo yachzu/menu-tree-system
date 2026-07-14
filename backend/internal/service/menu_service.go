@@ -160,17 +160,7 @@ func (s *menuService) isDescendant(targetID, potentialAncestorID uuid.UUID) (boo
 	if targetID == potentialAncestorID {
 		return true, nil
 	}
-	child, err := s.repo.FindByID(targetID)
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return false, nil
-		}
-		return false, fmt.Errorf("failed to fetch menu: %w", err)
-	}
-	if child.ParentID == nil {
-		return false, nil
-	}
-	return s.isDescendant(*child.ParentID, potentialAncestorID)
+	return s.repo.IsAncestor(potentialAncestorID, targetID)
 }
 
 func (s *menuService) Move(id uuid.UUID, req *dto.MoveMenuRequest) (*dto.MenuResponse, error) {
