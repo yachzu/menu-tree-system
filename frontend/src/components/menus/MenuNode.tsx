@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { MenuItem } from "@/lib/types";
-import { useMenuStore } from "@/store/menu-store";
+import { useMenuStore, expandedSet } from "@/store/menu-store";
 import {
   ChevronRight,
   ChevronDown,
@@ -34,7 +34,7 @@ export default function MenuNode({ item, depth = 0 }: MenuNodeProps) {
   const [isDragOver, setIsDragOver] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
 
-  const isExpanded = expandedIds.has(item.id);
+  const isExpanded = expandedSet(expandedIds).has(item.id);
   const hasChildren = item.children && item.children.length > 0;
   const isSelected = selectedMenu?.id === item.id;
 
@@ -95,7 +95,12 @@ export default function MenuNode({ item, depth = 0 }: MenuNodeProps) {
     if (!draggedId || draggedId === item.id) return;
     const tree = useMenuStore.getState().tree;
     if (isOrContains(tree, draggedId, item.id)) return;
-    moveMenu(draggedId, item.id, 0);
+    const children = item.children || [];
+    const nextIndex =
+      children.length > 0
+        ? Math.max(...children.map((c) => c.order_index)) + 1
+        : 0;
+    moveMenu(draggedId, item.id, nextIndex);
   };
 
   const lineLeft = depth * 20 + 17;
@@ -208,7 +213,7 @@ export default function MenuNode({ item, depth = 0 }: MenuNodeProps) {
       {isExpanded && hasChildren && (
         <div className="relative">
           {item.children
-            .sort((a, b) => a.order_index - b.order_index)
+            .sort((a, b) => a.name.localeCompare(b.name))
             .map((child, index) => {
               const isLast = index === item.children.length - 1;
               return (

@@ -27,14 +27,14 @@ func NewMenuRepository(db *gorm.DB) MenuRepository {
 
 func (r *menuRepository) FindAll() ([]model.Menu, error) {
 	var menus []model.Menu
-	err := r.db.Order("depth ASC, order_index ASC").Find(&menus).Error
+	err := r.db.Order("LOWER(name) ASC, order_index ASC").Find(&menus).Error
 	return menus, err
 }
 
 func (r *menuRepository) FindByID(id uuid.UUID) (*model.Menu, error) {
 	var menu model.Menu
 	err := r.db.Preload("Children", func(db *gorm.DB) *gorm.DB {
-		return db.Order("order_index ASC")
+		return db.Order("LOWER(name) ASC, order_index ASC")
 	}).First(&menu, "id = ?", id).Error
 	if err != nil {
 		return nil, err
@@ -44,7 +44,7 @@ func (r *menuRepository) FindByID(id uuid.UUID) (*model.Menu, error) {
 
 func (r *menuRepository) FindChildren(parentID *uuid.UUID) ([]model.Menu, error) {
 	var menus []model.Menu
-	err := r.db.Where("parent_id = ?", parentID).Order("order_index ASC").Find(&menus).Error
+	err := r.db.Where("parent_id = ?", parentID).Order("LOWER(name) ASC, order_index ASC").Find(&menus).Error
 	return menus, err
 }
 

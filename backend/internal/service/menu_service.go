@@ -3,6 +3,8 @@ package service
 import (
 	"errors"
 	"fmt"
+	"sort"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -239,13 +241,13 @@ func toResponse(m *model.Menu) *dto.MenuResponse {
 }
 
 func sortResponseChildren(children []*dto.MenuResponse) []*dto.MenuResponse {
-	for i := 0; i < len(children); i++ {
-		for j := i + 1; j < len(children); j++ {
-			if children[i].OrderIndex > children[j].OrderIndex {
-				children[i], children[j] = children[j], children[i]
-			}
+	sort.Slice(children, func(i, j int) bool {
+		ci, cj := strings.ToLower(children[i].Name), strings.ToLower(children[j].Name)
+		if ci != cj {
+			return ci < cj
 		}
-	}
+		return children[i].OrderIndex < children[j].OrderIndex
+	})
 	return children
 }
 

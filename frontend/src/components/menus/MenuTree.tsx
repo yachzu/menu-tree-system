@@ -36,7 +36,7 @@ export default function MenuTree() {
           <p className="text-red-600 font-medium mb-2">Failed to load menu tree</p>
           <p className="text-sm text-gray-500 mb-4">{error}</p>
           <button
-            onClick={fetchTree}
+            onClick={() => fetchTree()}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
           >
             Retry
@@ -87,7 +87,7 @@ export default function MenuTree() {
         ) : (
           <div className="space-y-0.5">
             {filteredTree
-              .sort((a, b) => a.order_index - b.order_index)
+              .sort((a, b) => a.name.localeCompare(b.name))
               .map((item) => (
                 <MenuNode key={item.id} item={item} />
               ))}
