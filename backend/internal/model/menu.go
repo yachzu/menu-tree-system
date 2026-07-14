@@ -16,7 +16,7 @@ type Menu struct {
 	OrderIndex int        `gorm:"not null;default:0;index:idx_parent_order" json:"order_index"`
 	CreatedAt  time.Time  `json:"created_at"`
 	UpdatedAt  time.Time  `json:"updated_at"`
-	Children   []*Menu    `gorm:"foreignKey:ParentID" json:"children,omitempty"`
+	Children   []*Menu    `gorm:"foreignKey:ParentID;constraint:OnDelete:CASCADE" json:"children,omitempty"`
 }
 
 func (m *Menu) BeforeCreate(tx *gorm.DB) error {
