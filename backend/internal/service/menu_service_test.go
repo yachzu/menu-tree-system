@@ -104,6 +104,23 @@ func (m *mockMenuRepository) GetMaxOrderIndex(parentID *uuid.UUID) (int, error) 
 	return max, nil
 }
 
+func (m *mockMenuRepository) IsAncestor(ancestorID, descendantID uuid.UUID) (bool, error) {
+	current := descendantID
+	for {
+		menu, ok := m.menus[current]
+		if !ok {
+			return false, nil
+		}
+		if menu.ID == ancestorID {
+			return true, nil
+		}
+		if menu.ParentID == nil {
+			return false, nil
+		}
+		current = *menu.ParentID
+	}
+}
+
 func fixedTime() time.Time {
 	return time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC)
 }
