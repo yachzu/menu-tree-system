@@ -9,7 +9,7 @@ import (
 	"github.com/xos/Projects/stk-project/backend/internal/middleware"
 )
 
-func Setup(h *handler.MenuHandler, enableSwagger bool) *gin.Engine {
+func Setup(h *handler.MenuHandler) *gin.Engine {
 	r := gin.Default()
 	r.Use(middleware.SecurityHeaders())
 	r.Use(middleware.CORSMiddleware())
@@ -17,9 +17,8 @@ func Setup(h *handler.MenuHandler, enableSwagger bool) *gin.Engine {
 	r.Use(middleware.RateLimiter())
 	r.MaxMultipartMemory = 1 << 10
 
-	if enableSwagger {
-		r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	}
+	// Swagger
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	api := r.Group("/api")
 	{
