@@ -54,7 +54,7 @@ func main() {
 	menuSvc := service.NewMenuService(menuRepo)
 	menuHandler := handler.NewMenuHandler(menuSvc)
 
-	r := router.Setup(menuHandler)
+	r := router.Setup(menuHandler, cfg.EnableSwagger)
 
 	addr := fmt.Sprintf(":%s", cfg.ServerPort)
 	log.Printf("Server starting on %s", addr)

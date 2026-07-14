@@ -10,20 +10,22 @@ import (
 )
 
 type Config struct {
-	ServerPort string
-	DBHost     string
-	DBPort     string
-	DBUser     string
-	DBPassword string
-	DBName     string
-	DBSSLMode  string
+	ServerPort    string
+	DBHost        string
+	DBPort        string
+	DBUser        string
+	DBPassword    string
+	DBName        string
+	DBSSLMode     string
+	EnableSwagger bool
 }
 
 func Load() *Config {
 	godotenv.Load()
 
 	cfg := &Config{
-		ServerPort: getEnv("SERVER_PORT", "8080"),
+		ServerPort:    getEnv("SERVER_PORT", "8080"),
+		EnableSwagger: getEnv("SWAGGER_ENABLED", "false") == "true",
 	}
 
 	if dsn := os.Getenv("DATABASE_URL"); dsn != "" {
