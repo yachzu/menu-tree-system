@@ -6,7 +6,6 @@ PRD_STK_MenuTreeSystem.md
 
 # Environment files (sensitive credentials)
 .env
-.env.example
 
 # Temporary files
 tmp/
