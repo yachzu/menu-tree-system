@@ -1,0 +1,34 @@
+name: Daily Cherry-Pick
+on:
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  cherry-pick:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: main
+
+      - name: Pick next commit from dev
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+          NEXT=$(git log --oneline --reverse origin/dev ^origin/main \
+                 | head -1 | awk '{print $1}')
+
+          if [ -z "$NEXT" ]; then
+            echo "No more commits to cherry-pick. Exiting."
+            exit 0
+          fi
+
+          git checkout main
+          git cherry-pick "$NEXT"
+          git push origin main
