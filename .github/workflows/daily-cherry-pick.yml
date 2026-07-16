@@ -21,8 +21,8 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
 
-          NEXT=$(git log --oneline --reverse origin/dev ^origin/main \
-                 | head -1 | awk '{print $1}')
+          NEXT=$(git cherry origin/main origin/dev \
+                 | grep '^+' | head -1 | awk '{print $2}')
 
           if [ -z "$NEXT" ]; then
             echo "No more commits to cherry-pick. Exiting."
