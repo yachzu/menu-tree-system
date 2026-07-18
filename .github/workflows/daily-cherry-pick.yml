@@ -22,7 +22,7 @@ jobs:
           git config user.email "github-actions@github.com"
 
           NEXT=$(git cherry origin/main origin/dev \
-                 | grep '^+' | head -1 | awk '{print $2}')
+                 | grep '^+' | awk 'END {print $2}')
 
           if [ -z "$NEXT" ]; then
             echo "No more commits to cherry-pick. Exiting."
